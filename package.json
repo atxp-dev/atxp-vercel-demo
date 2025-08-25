@@ -1,0 +1,28 @@
+{
+  "name": "atxp-vercel-demo",
+  "version": "1.0.0",
+  "description": "Example CLI application demonstrating atxp-client usage with Vercel",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "dev": "tsx src/index.ts",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "@atxp/client": "^0.2.12",
+    "@atxp/common": "^0.2.12",
+    "@ai-sdk/openai": "^1.3.23",
+    "ai": "^4.3.19",
+    "dotenv": "^17.2.1"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
