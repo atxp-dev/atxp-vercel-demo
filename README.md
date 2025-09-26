@@ -1,9 +1,10 @@
 # ATXP + Vercel AI SDK Demo
 
-This example project demonstrates how to integrate ATXP's pay-per-use MCP (Model Context Protocol) tools with Vercel AI SDK for building AI applications with streaming responses and real-time interactions.
+This example project demonstrates how to integrate ATXP's pay-per-use MCP (Model Context Protocol) tools with Vercel AI SDK for building AI applications. This example project accesses LLMs through the [ATXP LLM Gateway](https://docs.atxp.ai/). The LLM Gateway allows you to Access multiple LLM providers through a single, unified API without managing multiple accounts or API keys, giving you instant access to models from qwen, claude, deepseek, gemini, llama, gpt, grok, and more.
 
 ## Features
 
+- **LLM Gateway Integration**: Access multiple LLM providers through ATXP's unified OpenAI-compatible API
 - **Image Generation**: Create images using ATXP's image generation MCP server
 - **Web Search**: Search for information using ATXP's search MCP server
 - **Streaming Responses**: Leverage Vercel AI SDK for real-time AI interactions
@@ -41,8 +42,11 @@ Edit `.env` and add your credentials:
 ```env
 # Required for ATXP MCP tools (get from your ATXP dashboard)
 # Create an ATXP Account at https://accounts.atxp.ai
-ATXP_CONNECTION_STRING=https://accounts.atxp.ai?connection_token=<your_token>
+ATXP_CONNECTION=https://accounts.atxp.ai?connection_token=<your_token>&account_id=<your_account_id>
+```
 
+If you aren't using the ATXP LLM Gateway, you'll also need to specify your OpenAI API Key:
+```env
 # Required for OpenAI integration
 OPENAI_API_KEY=your_openai_api_key_here
 ```
@@ -74,7 +78,7 @@ This demo integrates ATXP's MCP tools with Vercel AI SDK through the following p
 1. **ATXP Account Initialization**: Creates an ATXP account using your connection string
 2. **MCP Transport Setup**: Builds streamable transports for ATXP's MCP servers (image generation and search)
 3. **Tool Integration**: Connects ATXP's MCP tools with Vercel AI SDK's experimental MCP client
-4. **AI Processing**: Uses OpenAI's GPT-4o-mini model with the integrated tools to process user requests
+4. **AI Processing**: Uses OpenAI's GPT models through the ATXP LLM Gateway with the integrated tools to process user requests
 5. **Response Generation**: Returns structured responses with tool results
 
 ## Project Structure
@@ -86,7 +90,7 @@ atxp-vercel-demo/
 ├── env.example           # Environment variables template
 ├── package.json          # Dependencies and scripts
 ├── tsconfig.json         # TypeScript configuration
-└── README.md            # This file
+└── README.md             # This file
 ```
 
 ## Key Dependencies
@@ -106,6 +110,7 @@ To add more ATXP MCP services:
 
 ## Documentation
 
+- [ATXP LLM Gateway](https://docs.atxp.ai/llm) - Access multiple LLM providers through a unified API
 - [ATXP Vercel AI SDK Integration Guide](https://docs.atxp.ai/client/guides/vercel_ai)
 - [ATXP MCP Servers Documentation](https://docs.atxp.ai/client/mcp-servers)
 - [Vercel AI SDK Documentation](https://sdk.vercel.ai/docs)
