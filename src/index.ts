@@ -2,8 +2,8 @@
 
 import 'dotenv/config';
 import { buildStreamableTransport, ATXPAccount } from '@atxp/client';
-import { Message, generateText, experimental_createMCPClient as createMCPClient } from "ai";
-import { openai } from "@ai-sdk/openai";
+import { ModelMessage, generateText, experimental_createMCPClient as createMCPClient } from "ai";
+import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
 
 interface ServiceConfig {
   mcpServer: string;
@@ -54,16 +54,10 @@ const validateArgs = (args: string[]) => {
   }
 }
 
-const validateEnvironment = (connectionString: string, openaiApiKey: string) => {
+const validateEnvironment = (connectionString: string) => {
   if (!connectionString) {
-    console.error('Error: ATXP_CONNECTION_STRING environment variable is required');
-    console.error('Example: ATXP_CONNECTION_STRING=https://accounts.atxp.ai?connection_token=<random_token>');
-    process.exit(1);
-  }
-
-  if (!openaiApiKey) {
-    console.error('Error: OPENAI_API_KEY environment variable is required');
-    console.error('Example: OPENAI_API_KEY=your_openai_api_key');
+    console.error('Error: ATXP_CONNECTION environment variable is required');
+    console.error('Example: ATXP_CONNECTION=https://accounts.atxp.ai?connection_token=<random_token>&account_id=<random_string>');
     process.exit(1);
   }
 }
@@ -91,12 +85,18 @@ async function main() {
   const prompt = args[1];
 
   // Validate environment variables
-  const connectionString = process.env.ATXP_CONNECTION_STRING || ''
-  const openaiApiKey = process.env.OPENAI_API_KEY || ''
-  validateEnvironment(connectionString, openaiApiKey)
+  const connectionString = process.env.ATXP_CONNECTION || ''
+  validateEnvironment(connectionString)
 
   try {
     const account = new ATXPAccount(connectionString)
+
+    // Configure the LLM Gateway to pay for each LLM call from my ATXP account
+    const atxp = createOpenAICompatible({
+      name: 'atxp-llm',
+      apiKey: connectionString,
+      baseURL: 'https://llm.atxp.ai/v1',
+    });
 
     // For each service in SERVICES, get the tools. We need to reduce this
     // to a single array of all tools.
@@ -108,9 +108,8 @@ async function main() {
       tools = { ...tools, ...mcpTools }
     }
 
-    const systemPrompt: Message[] = [
+    const systemPrompt: ModelMessage[] = [
       {
-        id: "1",
         role: "system",
         content: `AI assistant is a brand new, powerful, human-like artificial intelligence.
       The traits of AI include expert knowledge, helpfulness, cleverness, and articulateness.
@@ -123,12 +122,11 @@ async function main() {
     ];
   
     const response = await generateText({
-      model: openai("gpt-4o-mini"),
+      model: atxp("gpt-4.1"),
       tools,
       messages: [
         ...systemPrompt,
         {
-          id: "2",
           role: "user",
           content: prompt,
         },
